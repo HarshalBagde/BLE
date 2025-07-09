@@ -8,6 +8,7 @@
 #include "esp_bt_main.h"
 #include "esp_gatt_common_api.h"
 #include <nvs_flash.h>
+#include "mqtt.h"
 
 #define GATTS_SERVICE_UUID_TEST   0x00FF
 #define GATTS_CHAR_UUID_TEST      0xFF01
@@ -121,14 +122,28 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event,
         break;
     }
     case ESP_GATTS_WRITE_EVT: {
+        esp_gatt_rsp_t rsp;
+        memset(&rsp, 0, sizeof(esp_gatt_rsp_t));
+        rsp.attr_value.handle = param->write.handle;
+        rsp.attr_value.len = param->write.len;
+        memcpy(rsp.attr_value.value, param->write.value, param->write.len);
+        esp_ble_gatts_send_response(gatts_if, param->write.conn_id, param->write.trans_id,
+                                    ESP_GATT_OK, &rsp);
+
         if (!param->write.is_prep) {
             int len = param->write.len < sizeof(last_ble_message) - 1 ? param->write.len : sizeof(last_ble_message) - 1;
             memcpy(last_ble_message, param->write.value, len);
             last_ble_message[len] = '\0';
             ESP_LOGI(TAG, "Received data over BLE: %s", last_ble_message);
+
+            // Publish to MQTT
+            mqtt_publish(last_ble_message);
         }
         break;
     }
+    case ESP_GATTS_DISCONNECT_EVT:
+        esp_ble_gap_start_advertising(&adv_params);
+        break;
     default:
         break;
     }

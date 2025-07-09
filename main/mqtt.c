@@ -3,6 +3,7 @@
 #include "mqtt.h"
 #include "esp_log.h"
 #include "mqtt_client.h"
+#define MQTT_BROKER_URI "mqtt://10.156.240.192"
 
 static const char *TAG = "MQTT";
 
@@ -30,7 +31,7 @@ static void mqtt_event_handler_cb(void *handler_args, esp_event_base_t base, int
 
 void mqtt_app_start(void) {
     esp_mqtt_client_config_t mqtt_cfg = {
-        .broker.address.uri = "mqtt://broker.hivemq.com", // Change to your broker if needed
+        .broker.address.uri = MQTT_BROKER_URI,
     };
 
     client = esp_mqtt_client_init(&mqtt_cfg);
