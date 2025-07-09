@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "__locale": "cpp",
+        "string": "cpp",
+        "string_view": "cpp"
+    },
+    "idf.port": "/dev/tty.usbserial-0001",
+    "idf.flashType": "UART"
+}

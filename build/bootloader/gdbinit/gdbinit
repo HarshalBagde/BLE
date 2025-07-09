@@ -1,0 +1,2 @@
+source /Users/harshalbagde/Documents/Espressif/esp32-espidf-app/build/bootloader/gdbinit/symbols
+source /Users/harshalbagde/Documents/Espressif/esp32-espidf-app/build/bootloader/gdbinit/connect
